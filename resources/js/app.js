@@ -1,5 +1,27 @@
 document.documentElement.classList.add('js-enhanced');
 
+const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
+if ('IntersectionObserver' in window && !motionPreference.matches) {
+    const cards = document.querySelectorAll('.categories-grid .category-card, .recent-section .job-card, .companies-grid .company-card, .resource-card, .how-section .step');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(({ target, isIntersecting }) => {
+            if (!isIntersecting) return;
+            target.classList.add('is-revealed');
+            observer.unobserve(target);
+            window.setTimeout(() => target.classList.remove('reveal-pending', 'is-revealed'), 500);
+        });
+    }, { threshold: 0.08 });
+    cards.forEach((card) => {
+        card.classList.add('reveal-pending');
+        observer.observe(card);
+    });
+    motionPreference.addEventListener('change', ({ matches }) => {
+        if (!matches) return;
+        observer.disconnect();
+        cards.forEach((card) => card.classList.remove('reveal-pending', 'is-revealed'));
+    });
+}
+
 const mobileLayout = window.matchMedia('(max-width: 899px)');
 const menuToggle = document.querySelector('[data-menu-toggle]');
 const mainNav = document.querySelector('#main-nav');
@@ -66,6 +88,10 @@ if (registrationForm) {
         companyField.hidden = !isEmployer;
         const input = companyField.querySelector('input');
         if (input) input.required = isEmployer;
+        const title = document.querySelector('[data-register-title]');
+        const description = document.querySelector('[data-register-description]');
+        if (title) title.textContent = isEmployer ? 'Crea tu cuenta de empresa' : 'Crea tu perfil de candidato';
+        if (description) description.textContent = isEmployer ? 'Presenta tu negocio y encuentra a tu próximo equipo.' : 'Guarda oportunidades y sigue tus postulaciones desde tu cuenta.';
     };
     registrationForm.querySelectorAll('[name="role"]').forEach((input) => input.addEventListener('change', updateRole));
     updateRole();
@@ -77,6 +103,7 @@ document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
         const reveal = input.type === 'password';
         input.type = reveal ? 'text' : 'password';
         toggle.setAttribute('aria-pressed', String(reveal));
+        toggle.setAttribute('aria-label', reveal ? 'Ocultar contraseña' : 'Mostrar contraseña');
         toggle.textContent = reveal ? (toggle.dataset.labelHide || 'Ocultar') : (toggle.dataset.labelShow || 'Mostrar');
     });
 });

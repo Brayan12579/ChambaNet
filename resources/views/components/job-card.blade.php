@@ -21,13 +21,14 @@
             </form>
         @endif
     </div>
-    <div class="job-card-badges">
+    @if($job->is_demo || $job->company->verified || $job->featured)<div class="job-card-badges">
         @if($job->is_demo)<span class="badge badge-demo">Demo · oferta ficticia</span>@endif
         @if($job->company->verified)<span class="badge badge-success"><x-icon name="shield" :size="14" />{{ $job->is_demo ? 'Verificación de ejemplo' : 'Empresa verificada' }}</span>@endif
         @if($job->featured)<span class="badge badge-featured"><x-icon name="spark" :size="14" />Destacada</span>@endif
-    </div>
+    </div>@endif
     <h3><a href="{{ route('jobs.show', $job) }}">{{ $job->title }}</a></h3>
     <div class="job-tags"><span>{{ $schedules[$job->schedule] ?? $job->schedule }}</span><span>{{ $job->category->name }}</span></div>
+    <div class="job-contract"><x-icon name="file" :size="16" /><span>{{ \App\Models\JobOffer::CONTRACT_TYPES[$job->contract_type] ?? $job->contract_type }}</span><span>·</span><span>{{ $job->vacancies }} {{ $job->vacancies === 1 ? 'vacante' : 'vacantes' }}</span></div>
     <p class="job-excerpt">{{ \Illuminate\Support\Str::limit($job->description, 140) }}</p>
     <div class="job-salary">
         @if($job->salary_min !== null)
@@ -37,7 +38,7 @@
         @endif
     </div>
     <div class="job-card-bottom">
-        <span><x-icon name="clock" :size="14" />{{ $job->created_at->locale('es')->diffForHumans() }}</span>
-        <a href="{{ route('jobs.show', $job) }}" class="text-link">Ver oferta <x-icon name="arrow" :size="17" /></a>
+        <time datetime="{{ $job->created_at->toDateString() }}"><x-icon name="clock" :size="15" />{{ $job->created_at->locale('es')->diffForHumans() }}</time>
+        <a href="{{ route('jobs.show', $job) }}" class="button button-secondary button-sm">Ver oferta <x-icon name="arrow" :size="16" /></a>
     </div>
 </article>

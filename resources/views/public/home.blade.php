@@ -1,24 +1,26 @@
 @extends('layouts.app')
 @section('title', 'Encuentra tu próximo empleo en Cusco')
 @section('content')
-<section class="hero">
+<section class="hero" aria-labelledby="home-title">
     <div class="container hero-grid">
         <div class="hero-copy">
-            <span class="hero-kicker"><span class="tiny-dot"></span> TU TALENTO TIENE UN LUGAR</span>
-            <h1>Encuentra tu próximo<br><span>empleo en Cusco.</span></h1>
-            <p>Oportunidades de nuestra ciudad, con la información que necesitas para dar el siguiente paso. Busca cerca de ti y postula con confianza.</p>
-            <div class="hero-availability"><x-icon name="briefcase" :size="19" /><span><strong>{{ $jobCount }}</strong> {{ $jobCount === 1 ? 'oferta disponible' : 'ofertas disponibles' }} en negocios locales</span></div>
-            <div class="hero-trust"><x-icon name="shield" :size="21" /><span>Postular es gratis.<br><strong>Tu CV se comparte cuando tú postulas.</strong></span></div>
+            <span class="hero-kicker"><span class="tiny-dot"></span> EMPLEO LOCAL · CUSCO, PERÚ</span>
+            <h1 id="home-title">Tu talento.<br>Tu ciudad.<br><span>Tu próximo paso.</span></h1>
+            <p>Conectamos personas con oportunidades de trabajo en Cusco. Encuentra tu lugar o a quienes harán crecer tu equipo.</p>
             <div class="hero-entry-actions">
                 @guest
-                    <a class="button" href="{{ route('register', ['role' => 'candidate']) }}">Busco empleo <x-icon name="arrow" :size="18" /></a>
-                    <a class="button button-secondary" href="{{ route('register', ['role' => 'employer']) }}">Quiero contratar</a>
+                    <a class="button button-lime" href="{{ route('jobs.index') }}">Quiero encontrar empleo <x-icon name="arrow" :size="18" /></a>
+                    <a class="button button-hero-secondary" href="{{ route('register', ['role' => 'employer']) }}">Quiero contratar</a>
                 @else
-                    <a class="button" href="{{ route('dashboard') }}">{{ match(auth()->user()->role) { 'admin' => 'Abrir administración', 'employer' => 'Gestionar mi empresa', default => 'Continuar mi búsqueda' } }} <x-icon name="arrow" :size="18" /></a>
+                    <a class="button button-lime" href="{{ route('dashboard') }}">{{ match(auth()->user()->role) { 'admin' => 'Abrir administración', 'employer' => 'Gestionar mi empresa', default => 'Continuar mi búsqueda' } }} <x-icon name="arrow" :size="18" /></a>
                 @endguest
             </div>
+            <div class="hero-trust"><x-icon name="shield" :size="19" /><span>Postula gratis. Comparte tu CV solo con quien eliges.</span></div>
         </div>
-        <x-cusco-illustration />
+        <figure class="hero-photo">
+            <img src="{{ asset('images/equipo-chambanet.webp') }}" srcset="{{ asset('images/equipo-chambanet-640.webp') }} 640w, {{ asset('images/equipo-chambanet.webp') }} 1200w" sizes="(max-width: 619px) calc(100vw - 36px), (max-width: 899px) 45vw, 560px" width="1200" height="800" alt="Profesionales colaborando alrededor de una computadora en un espacio de trabajo luminoso" fetchpriority="high" decoding="async">
+            <figcaption><span>EL TALENTO ESTÁ CERCA</span><strong>Personas que suman.<br>Equipos que crecen.</strong><span class="photo-location"><x-icon name="pin" :size="16" />Inspirado en nuestra comunidad</span></figcaption>
+        </figure>
     </div>
     <div class="container hero-search-wrap">
         <form class="hero-search" action="{{ route('jobs.index') }}" method="GET" role="search">
@@ -27,7 +29,7 @@
             <label class="search-field search-schedule"><x-icon name="clock" :size="23" /><span><span class="search-label">JORNADA</span><select name="schedule" aria-label="Jornada laboral"><option value="">Cualquier jornada</option>@foreach(\App\Models\JobOffer::SCHEDULES as $value => $label)<option value="{{ $value }}">{{ $label }}</option>@endforeach</select></span></label>
             <button class="button search-button" type="submit">Buscar empleo <x-icon name="arrow" :size="20" /></button>
         </form>
-        <div class="search-hint"><div class="popular-searches"><span>Explora:</span><a href="{{ route('jobs.index', ['q' => 'cocina']) }}">Cocina</a><a href="{{ route('jobs.index', ['q' => 'atención']) }}">Atención al cliente</a><a href="{{ route('jobs.index', ['schedule' => 'part_time']) }}">Medio tiempo</a></div><span><x-icon name="pin" :size="17" /> Hecho para Cusco</span></div>
+        <div class="search-hint"><div class="popular-searches"><span>Búsquedas rápidas:</span><a href="{{ route('jobs.index', ['q' => 'cocina']) }}">Cocina</a><a href="{{ route('jobs.index', ['q' => 'atención']) }}">Atención al cliente</a><a href="{{ route('jobs.index', ['schedule' => 'part_time']) }}">Medio tiempo</a></div><span><x-icon name="briefcase" :size="17" /><strong>{{ $jobCount }}</strong> {{ $jobCount === 1 ? 'oferta disponible' : 'ofertas disponibles' }}</span></div>
     </div>
 </section>
 <section class="section categories-section">
@@ -69,7 +71,7 @@
 </section>
 <section class="section how-section">
     <div class="container how-grid">
-        <div><span class="eyebrow">UN CAMINO CLARO HACIA TU PRÓXIMO EMPLEO</span><h2>Menos vueltas.<br>Más posibilidades.</h2><p>Organiza tu búsqueda, presenta tu talento y sigue cada postulación desde un solo lugar.</p><a class="button" href="{{ auth()->check() ? route('dashboard') : route('register') }}">{{ auth()->check() ? 'Continuar en mi panel' : 'Crear mi perfil gratis' }} <x-icon name="arrow" :size="19" /></a></div>
+        <div><span class="eyebrow">ASÍ FUNCIONA CHAMBANET</span><h2>De la búsqueda<br>al siguiente paso.</h2><p>Un proceso sencillo para encontrar oportunidades y llevar el control de tus postulaciones.</p><a class="button" href="{{ auth()->check() ? route('dashboard') : route('register') }}">{{ auth()->check() ? 'Continuar en mi panel' : 'Crear mi perfil gratis' }} <x-icon name="arrow" :size="19" /></a><div class="benefit-note"><x-icon name="lock" :size="24" /><div><strong>Tu información, bajo tu control.</strong><p>Tu CV se comparte cuando envías una postulación, con esa empresa.</p></div></div></div>
         <div class="steps">
             <div class="step"><span>01</span><div><h3>Cuenta tu historia</h3><p>Completa tu perfil y agrega tu CV. Tu experiencia y tus ganas de aprender cuentan.</p></div></div>
             <div class="step"><span>02</span><div><h3>Encuentra lo que va contigo</h3><p>Filtra por distrito, jornada, categoría y salario. Guarda las ofertas que te interesen.</p></div></div>

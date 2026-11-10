@@ -3,13 +3,13 @@
 @section('content')
 <section class="auth-section container">
     <div class="auth-story">
-        <span class="eyebrow">TU PRÓXIMO CAPÍTULO EMPIEZA AQUÍ</span><h1>Más oportunidades.<br>Un futuro<br>más tuyo<span class="heading-dot">.</span></h1>
+        <span class="eyebrow">TU PRÓXIMO CAPÍTULO EMPIEZA AQUÍ</span><h1>Hay un lugar<br>para tu talento<span class="heading-dot">.</span></h1>
         <p>Encuentra un empleo que vaya contigo o conecta tu negocio con el talento de Cusco.</p>
         <div class="auth-benefits"><div><x-icon name="check" :size="22" /><span>Empleos de negocios locales, cerca de ti.</span></div><div><x-icon name="check" :size="22" /><span>Tus postulaciones organizadas en un solo lugar.</span></div><div><x-icon name="check" :size="22" /><span>Tu información y tu CV bajo tu control.</span></div></div>
-        <div class="auth-story-art compact"><x-icon name="users" :size="65" /><span>Crezcamos juntos.</span><i aria-hidden="true">✦</i></div>
+        <figure class="auth-photo"><img src="{{ asset('images/equipo-chambanet.webp') }}" srcset="{{ asset('images/equipo-chambanet-640.webp') }} 640w, {{ asset('images/equipo-chambanet.webp') }} 1200w" sizes="(max-width: 619px) calc(100vw - 36px), (max-width: 899px) 45vw, 560px" width="1200" height="800" alt="Un equipo de profesionales trabaja en conjunto en un negocio local" loading="lazy" decoding="async"><figcaption>Oportunidades para las personas. Talento para los negocios.</figcaption></figure>
     </div>
     <div class="auth-card panel">
-        <span class="eyebrow">EMPECEMOS CON LO ESENCIAL</span><h2>Crea tu cuenta gratis</h2><p>Elige cómo quieres formar parte de ChambaNet.</p>
+        <span class="eyebrow">EMPECEMOS CON LO ESENCIAL</span><h2 data-register-title>{{ old('role', request('role')) === 'employer' ? 'Crea tu cuenta de empresa' : 'Crea tu perfil de candidato' }}</h2><p data-register-description>{{ old('role', request('role')) === 'employer' ? 'Presenta tu negocio y encuentra a tu próximo equipo.' : 'Guarda oportunidades y sigue tus postulaciones desde tu cuenta.' }}</p>
         <form action="{{ route('register.store') }}" method="POST" class="stack" data-register-form>
             @csrf
             <fieldset class="role-picker">

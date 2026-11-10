@@ -1,6 +1,6 @@
 <aside class="sidebar panel" aria-label="Panel de administración">
     <span class="eyebrow">ChambaNet</span>
-    <h2>Administración</h2>
+    <div class="sidebar-identity"><span class="account-avatar" aria-hidden="true"><x-icon name="shield" :size="23" /></span><h2>Administración<span class="sidebar-role">Gestión de la plataforma</span></h2></div>
     <nav class="stack" aria-label="Secciones administrativas">
         <a href="{{ route('admin.dashboard') }}" @class(['active' => request()->routeIs('admin.dashboard')]) @if(request()->routeIs('admin.dashboard')) aria-current="page" @endif><x-icon name="sliders" :size="19" />Resumen general</a>
         @foreach($sections as $key => $definition)

@@ -3,13 +3,13 @@
 @section('content')
 <section class="auth-section container">
     <div class="auth-story">
-        <span class="eyebrow">TU HISTORIA CONTINÚA AQUÍ</span><h1>Un nuevo paso.<br>Más cerca de<br>lo que buscas<span class="heading-dot">.</span></h1>
+        <span class="eyebrow">TU HISTORIA CONTINÚA AQUÍ</span><h1>Vuelve a conectar<br>con tu próximo paso<span class="heading-dot">.</span></h1>
         <p>Accede a tus oportunidades, postulaciones y próximos pasos desde un solo lugar.</p>
-        <div class="auth-story-art"><x-icon name="briefcase" :size="70" /><span>Tu talento tiene un lugar en Cusco.</span><i aria-hidden="true">✦</i></div>
+        <figure class="auth-photo"><img src="{{ asset('images/equipo-chambanet.webp') }}" srcset="{{ asset('images/equipo-chambanet-640.webp') }} 640w, {{ asset('images/equipo-chambanet.webp') }} 1200w" sizes="(max-width: 619px) calc(100vw - 36px), (max-width: 899px) 45vw, 560px" width="1200" height="800" alt="Personas colaborando y compartiendo ideas en un espacio profesional" loading="lazy" decoding="async"><figcaption>El talento de nuestra ciudad tiene un lugar.</figcaption></figure>
         <div class="auth-security"><x-icon name="shield" :size="25" /><span>Tu CV es privado.<br><strong>Solo lo recibe la empresa a la que postulas.</strong></span></div>
     </div>
     <div class="auth-card panel">
-        <span class="eyebrow">BIENVENIDO DE VUELTA</span><h2>Inicia sesión</h2><p>Qué bueno tenerte otra vez en ChambaNet.</p>
+        <span class="auth-form-icon"><x-icon name="lock" :size="25" /></span><span class="eyebrow">BIENVENIDO DE VUELTA</span><h2>Inicia sesión</h2><p>Tu búsqueda y tu equipo, en un mismo lugar.</p>
         <form action="{{ route('login.store') }}" method="POST" class="stack">
             @csrf
             <div class="field"><label for="email">Correo electrónico</label><input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="tucorreo@ejemplo.com" autocomplete="email" required autofocus maxlength="255" @error('email') aria-invalid="true" aria-describedby="email-error" @enderror>@error('email')<span class="field-error" id="email-error">{{ $message }}</span>@enderror</div>

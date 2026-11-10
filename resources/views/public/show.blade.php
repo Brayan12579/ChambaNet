@@ -2,7 +2,7 @@
 @section('title', $job->title)
 @section('content')
 @php $isCandidate = auth()->check() && auth()->user()->active && auth()->user()->role === 'candidate'; @endphp
-<section class="container section">
+<section class="container section job-detail-page">
     <a href="{{ route('jobs.index') }}" class="back-link">← Volver a empleos</a>
     <header class="job-detail-heading">
         <div class="company-avatar company-avatar-lg">@if($job->company->logo_path)<img src="{{ route('companies.logo', $job->company) }}" alt="Logo de {{ $job->company->name }}">@else{{ mb_strtoupper(mb_substr($job->company->name, 0, 1)) }}@endif</div>
@@ -22,9 +22,9 @@
                     <div><x-icon name="book" :size="23" /><span>Contrato<strong>{{ \App\Models\JobOffer::CONTRACT_TYPES[$job->contract_type] ?? $job->contract_type }}</strong></span></div>
                     <div><x-icon name="users" :size="23" /><span>Vacantes<strong>{{ $job->vacancies }}</strong></span></div>
                 </div>
-                <h2>Sobre la oportunidad</h2><div class="prose-content">{{ $job->description }}</div>
-                <h2>Lo que buscamos</h2><div class="prose-content">{{ $job->requirements }}</div>
-                <h2>Condiciones laborales</h2><div class="prose-content">{{ $job->conditions }}</div>
+                <section class="job-content-section"><h2><x-icon name="briefcase" :size="22" />Sobre la oportunidad</h2><div class="prose-content">{{ $job->description }}</div></section>
+                <section class="job-content-section"><h2><x-icon name="check" :size="22" />Lo que buscamos</h2><div class="prose-content">{{ $job->requirements }}</div></section>
+                <section class="job-content-section"><h2><x-icon name="file" :size="22" />Condiciones laborales</h2><div class="prose-content">{{ $job->conditions }}</div></section>
                 <div class="job-tags"><span>{{ $job->category->name }}</span><span>{{ $job->district->name }}</span></div>
             </article>
             <details class="panel report-panel" @if($errors->has('reason') || $errors->has('details')) open @endif>
@@ -44,7 +44,7 @@
         </div>
         <aside class="stack" aria-label="Postulación y resumen">
             <div class="panel application-panel">
-                <span class="eyebrow">TU PRÓXIMO PASO</span>
+                <div class="application-panel-heading"><span class="auth-form-icon"><x-icon name="briefcase" :size="23" /></span><div><span class="eyebrow">TU PRÓXIMO PASO</span><h2>{{ $job->isOpen() && ($isCandidate || !auth()->check()) && !$application ? 'Postula a esta oferta' : 'Resumen de la convocatoria' }}</h2></div></div>
                 <div class="detail-salary">
                     @if($job->salary_min !== null)S/ {{ number_format($job->salary_min, 0) }}@if($job->salary_max !== null && $job->salary_max != $job->salary_min)<span> a S/ {{ number_format($job->salary_max, 0) }}</span>@endif<small>Remuneración mensual</small>
                     @else A convenir<small>Consulta las condiciones del puesto</small>@endif

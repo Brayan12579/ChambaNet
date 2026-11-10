@@ -18,10 +18,10 @@
         };
     }
 @endphp
-<section class="page-hero">
+<section class="page-hero search-hero">
     <div class="container">
         <span class="eyebrow">OPORTUNIDADES CERCA DE TI</span>
-        <h1>Tu próximo empleo<br>puede estar en Cusco<span class="heading-dot">.</span></h1>
+        <h1>Encuentra un trabajo<br>que vaya contigo<span class="heading-dot">.</span></h1>
         <p>Encuentra un puesto que encaje con tu experiencia, tu jornada y tu distrito.</p>
     </div>
 </section>
@@ -69,12 +69,12 @@
                     <a class="text-link" href="{{ route('jobs.index') }}">Limpiar todos</a>
                 </div>
             @endif
-            <div class="demo-notice"><x-icon name="book" :size="19" /><span>Las ofertas marcadas <strong>Demo</strong> son ejemplos ficticios para explorar la plataforma.</span></div>
+            @if($jobs->contains('is_demo', true))<div class="demo-notice"><x-icon name="book" :size="19" /><span>Las ofertas marcadas <strong>Demo</strong> son ejemplos ficticios para explorar la plataforma.</span></div>@endif
             <div class="grid jobs-grid">
                 @forelse($jobs as $job)
                     <x-job-card :job="$job" />
                 @empty
-                    <div class="empty-state panel">
+                    <div class="empty-state panel results-empty">
                         <span class="category-icon"><x-icon name="search" :size="34" /></span>
                         <h3>No encontramos coincidencias esta vez</h3>
                         <p>Prueba quitando un filtro o busca un puesto más general. Tu próxima oportunidad puede estar a un ajuste de distancia.</p>
