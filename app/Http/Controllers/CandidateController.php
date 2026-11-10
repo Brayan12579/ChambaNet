@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\CandidateProfileRequest;
+use App\Models\CandidateProfile;
 use App\Models\District;
 use App\Models\JobOffer;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
@@ -62,7 +64,7 @@ class CandidateController extends Controller
 
         return [
             'completion' => ['percentage' => (int) round($completed / count($fields) * 100), 'completed' => $completed, 'total' => count($fields), 'missing' => array_filter($fields, fn (array $field): bool => ! $field['complete'])],
-            'cvInfo' => ['exists' => $hasCv, 'sizeKb' => $hasCv ? (int) ceil(Storage::disk('local')->size($profile->cv_path) / 1024) : 0, 'updatedAt' => $hasCv ? \Illuminate\Support\Carbon::createFromTimestamp(Storage::disk('local')->lastModified($profile->cv_path)) : null],
+            'cvInfo' => ['exists' => $hasCv, 'sizeKb' => $hasCv ? (int) ceil(Storage::disk('local')->size($profile->cv_path) / 1024) : 0, 'updatedAt' => $hasCv ? Carbon::createFromTimestamp(Storage::disk('local')->lastModified($profile->cv_path)) : null],
         ];
     }
 
@@ -70,7 +72,6 @@ class CandidateController extends Controller
     {
         $user = $request->user();
         $data = $request->validated();
-        $oldPath = $user->candidateProfile?->cv_path;
         $newPath = null;
 
         try {
@@ -82,6 +83,8 @@ class CandidateController extends Controller
             }
 
             DB::transaction(function () use ($user, $data, $newPath): void {
+                User::whereKey($user->id)->lockForUpdate()->firstOrFail();
+                $oldPath = $user->candidateProfile()->first()?->cv_path;
                 $user->fill(['name' => $data['name'], 'email' => $data['email']]);
                 if ($user->isDirty('email')) {
                     $user->email_verified_at = null;
@@ -93,6 +96,9 @@ class CandidateController extends Controller
                     $profile['cv_path'] = $newPath;
                 }
                 $user->candidateProfile()->updateOrCreate(['user_id' => $user->id], $profile);
+                if ($newPath) {
+                    CandidateProfile::deleteUnusedCv($oldPath);
+                }
             });
         } catch (Throwable $exception) {
             if ($newPath) {
@@ -101,11 +107,24 @@ class CandidateController extends Controller
             throw $exception;
         }
 
-        if ($newPath && $oldPath) {
-            Storage::disk('local')->delete($oldPath);
-        }
-
         return back()->with('success', 'Tu perfil se actualizó correctamente.');
+    }
+
+    public function destroyCv(Request $request): RedirectResponse
+    {
+        DB::transaction(function () use ($request): void {
+            $user = User::whereKey($request->user()->id)->lockForUpdate()->firstOrFail();
+            $profile = $user->candidateProfile()->first();
+            if (! $profile || ! $profile->cv_path) {
+                return;
+            }
+
+            $path = $profile->cv_path;
+            $profile->update(['cv_path' => null]);
+            CandidateProfile::deleteUnusedCv($path);
+        });
+
+        return back()->with('success', 'Tu CV se eliminó correctamente. Las postulaciones anteriores conservan su documento.');
     }
 
     public function cv(Request $request): StreamedResponse

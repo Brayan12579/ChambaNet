@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="theme-color" content="#123d32">
     <meta name="description" content="Encuentra empleo en Cusco con ChambaNet. Explora oportunidades de negocios locales, guarda ofertas y sigue tus postulaciones en un solo lugar.">
     <title>@yield('title', 'Tu próximo empleo en Cusco') · ChambaNet</title>

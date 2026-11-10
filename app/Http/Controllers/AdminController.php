@@ -11,6 +11,7 @@ use App\Models\JobOffer;
 use App\Models\Report;
 use App\Models\Resource;
 use App\Models\User;
+use App\Services\LocationSearch;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\QueryException;
@@ -65,7 +66,9 @@ class AdminController extends Controller
         if ($search !== '') {
             $query->where(function ($builder) use ($section, $search): void {
                 $term = '%'.$search.'%';
-                $builder->where(match ($section) { 'jobs', 'resources' => 'title', 'reports' => 'reason', default => 'name' }, 'like', $term);
+                $builder->where(match ($section) {
+                    'jobs', 'resources' => 'title', 'reports' => 'reason', default => 'name'
+                }, 'like', $term);
                 match ($section) {
                     'users' => $builder->orWhere('email', 'like', $term),
                     'companies' => $builder->orWhere('sector', 'like', $term),
@@ -185,6 +188,9 @@ class AdminController extends Controller
 
     private function persist(Request $request, string $section, Model $record): void
     {
+        if ($section === 'jobs' && $request->hasAny(['location_name', 'location_selection', 'work_mode', 'latitude', 'longitude'])) {
+            $request->merge(app(LocationSearch::class)->offerAttributes($request->all()));
+        }
         $data = $request->validate($this->rules($section, $record, $request));
         foreach (match ($section) {
             'users', 'categories', 'districts' => ['active'],

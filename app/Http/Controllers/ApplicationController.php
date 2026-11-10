@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ApplyRequest;
 use App\Models\Application;
 use App\Models\JobOffer;
+use App\Models\User;
 use App\Notifications\ApplicationReceived;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -46,6 +47,7 @@ class ApplicationController extends Controller
         try {
             DB::transaction(function () use ($request, $job, $user, &$snapshotPath): void {
                 $offer = JobOffer::query()->published()->lockForUpdate()->findOrFail($job->id);
+                User::whereKey($user->id)->lockForUpdate()->firstOrFail();
                 if ($user->applications()->where('job_offer_id', $offer->id)->exists()) {
                     throw ValidationException::withMessages(['application' => 'Ya enviaste una postulación a esta oferta. Puedes consultar su estado en tu panel.']);
                 }
@@ -56,14 +58,14 @@ class ApplicationController extends Controller
                         throw new RuntimeException('No se pudo almacenar el documento PDF.');
                     }
                 } else {
-                    $profilePath = $user->candidateProfile?->cv_path;
-                    if (! $profilePath || ! Storage::disk('local')->exists($profilePath)) {
+                    $profile = $user->candidateProfile()->first();
+                    if ($profile?->hasValidCv()) {
+                        $snapshotPath = 'cvs/applications/'.Str::uuid().'.pdf';
+                        if (! Storage::disk('local')->copy($profile->cv_path, $snapshotPath)) {
+                            throw new RuntimeException('No se pudo adjuntar el documento PDF.');
+                        }
+                    } elseif ($offer->cv_required) {
                         throw ValidationException::withMessages(['cv' => 'Adjunta un CV en PDF o carga uno primero en tu perfil.']);
-                    }
-
-                    $snapshotPath = 'cvs/applications/'.Str::uuid().'.pdf';
-                    if (! Storage::disk('local')->copy($profilePath, $snapshotPath)) {
-                        throw new RuntimeException('No se pudo adjuntar el documento PDF.');
                     }
                 }
 

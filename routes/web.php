@@ -9,10 +9,13 @@ use App\Http\Controllers\FavoriteController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\LocationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PublicController::class, 'home'])->name('home');
 Route::get('/empleos', [PublicController::class, 'index'])->name('jobs.index');
+Route::post('/ubicaciones/buscar', [LocationController::class, 'search'])->middleware('throttle:20,1')->name('locations.search');
+Route::post('/ubicaciones/cerca', [LocationController::class, 'nearby'])->middleware('throttle:20,1')->name('locations.nearby');
 Route::get('/empleos/{job:slug}', [PublicController::class, 'show'])->name('jobs.show');
 Route::get('/empresas', [PublicController::class, 'companies'])->name('companies.index');
 Route::get('/empresas/{company:slug}/logo', [PublicController::class, 'logo'])->name('companies.logo');
@@ -48,6 +51,7 @@ Route::middleware('auth')->group(function (): void {
             Route::get('/perfil', [CandidateController::class, 'edit'])->name('profile.edit');
             Route::put('/perfil', [CandidateController::class, 'update'])->name('profile.update');
             Route::get('/cv', [CandidateController::class, 'cv'])->name('cv');
+            Route::delete('/cv', [CandidateController::class, 'destroyCv'])->name('cv.destroy');
             Route::get('/postulaciones', [ApplicationController::class, 'index'])->name('applications.index');
             Route::patch('/postulaciones/{application}/retirar', [ApplicationController::class, 'withdraw'])->name('applications.withdraw');
             Route::get('/guardados', [FavoriteController::class, 'index'])->name('favorites.index');

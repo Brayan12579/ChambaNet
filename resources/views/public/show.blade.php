@@ -10,7 +10,9 @@
             <a class="text-link" href="{{ route('companies.show', $job->company) }}">{{ $job->company->name }}</a>
             @if($job->company->verified)<span class="badge badge-success"><x-icon name="shield" :size="15" />{{ $job->is_demo ? 'Verificación de ejemplo' : 'Empresa verificada' }}</span>@endif
             @if($job->is_demo)<span class="badge badge-demo">Demo · oferta ficticia</span>@endif
-        </div><h1>{{ $job->title }}</h1><p><x-icon name="pin" :size="18" />{{ $job->district->name }}, Cusco <span>·</span> Publicado {{ $job->created_at->locale('es')->diffForHumans() }}</p></div>
+            <x-cv-requirement :job="$job" />
+            <span class="badge">{{ \App\Models\JobOffer::WORK_MODES[$job->work_mode] }}</span>
+        </div><h1>{{ $job->title }}</h1><p><x-icon name="pin" :size="18" />{{ $job->location_label }} <span>·</span> Publicado {{ $job->created_at->locale('es')->diffForHumans() }}</p></div>
     </header>
     @if($job->is_demo)<div class="demo-notice"><x-icon name="book" :size="20" /><span>Esta oferta es un <strong>ejemplo de demostración</strong> del proyecto. No representa una vacante real.</span></div>@endif
     @if($job->status === 'draft')<div class="alert alert-warning"><x-icon name="eye" /><span>Estás viendo un borrador privado. La oferta aparecerá en el buscador cuando se publique.</span></div>@endif
@@ -25,8 +27,11 @@
                 <section class="job-content-section"><h2><x-icon name="briefcase" :size="22" />Sobre la oportunidad</h2><div class="prose-content">{{ $job->description }}</div></section>
                 <section class="job-content-section"><h2><x-icon name="check" :size="22" />Lo que buscamos</h2><div class="prose-content">{{ $job->requirements }}</div></section>
                 <section class="job-content-section"><h2><x-icon name="file" :size="22" />Condiciones laborales</h2><div class="prose-content">{{ $job->conditions }}</div></section>
-                <div class="job-tags"><span>{{ $job->category->name }}</span><span>{{ $job->district->name }}</span></div>
+                <div class="job-tags"><span>{{ $job->category->name }}</span><span>{{ $job->location_label }}</span></div>
             </article>
+            @if($job->hasCoordinates() && !$job->is_demo)
+                <section class="panel stack"><h2><x-icon name="pin" :size="22" />Ubicación del trabajo</h2><p class="muted">{{ $job->location_label }}</p><x-job-map :markers="collect([['latitude' => $job->latitude, 'longitude' => $job->longitude, 'title' => $job->title, 'company' => $job->company->name, 'location' => $job->location_label, 'url' => route('jobs.show', $job)]])" /></section>
+            @endif
             <details class="panel report-panel" @if($errors->has('reason') || $errors->has('details')) open @endif>
                 <summary><x-icon name="shield" :size="20" />¿Esta oferta te parece sospechosa?</summary>
                 <p>Ayúdanos a cuidar la comunidad. Tu reporte llegará al equipo de administración para su revisión.</p>
@@ -59,7 +64,8 @@
                     @unless($application)
                         <form action="{{ route('applications.store', $job) }}" method="POST" enctype="multipart/form-data" class="stack">
                             @csrf
-                            <div class="field"><label for="cv">Tu CV en PDF</label><input type="file" id="cv" name="cv" accept="application/pdf,.pdf" aria-describedby="cv-help"><small id="cv-help">Hasta 5 MB. Si ya tienes un CV en tu perfil, puedes utilizarlo sin volver a adjuntarlo.</small>@error('cv')<span class="field-error">{{ $message }}</span>@enderror</div>
+                            @php $hasProfileCv = auth()->user()->candidateProfile?->hasValidCv() ?? false; @endphp
+                            <div class="field"><label for="cv">Tu CV en PDF ({{ $job->cv_required ? 'obligatorio' : 'opcional' }})</label><input type="file" id="cv" name="cv" accept="application/pdf,.pdf" aria-describedby="cv-help" @required($job->cv_required && !$hasProfileCv)><small id="cv-help">Hasta 5 MB. @if($hasProfileCv)Se adjuntará una copia del CV de tu perfil si no seleccionas otro PDF.@elseif($job->cv_required)Adjunta un PDF válido para enviar tu postulación.@else Puedes postular sin CV o adjuntar un PDF si lo deseas.@endif</small>@error('cv')<span class="field-error">{{ $message }}</span>@enderror</div>
                             <div class="field"><label for="cover_letter">Preséntate brevemente <span class="muted">(opcional)</span></label><textarea id="cover_letter" name="cover_letter" rows="4" maxlength="3000" placeholder="Cuéntales por qué te interesa esta oportunidad.">{{ old('cover_letter') }}</textarea></div>
                             <button type="submit" class="button button-full">Enviar postulación <x-icon name="arrow" :size="19" /></button>
                         </form>

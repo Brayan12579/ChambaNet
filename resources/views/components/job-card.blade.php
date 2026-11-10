@@ -10,7 +10,7 @@
         </a>
         <div class="job-company">
             <a href="{{ route('companies.show', $job->company) }}">{{ $job->company->name }}</a>
-            <span><x-icon name="pin" :size="15" />{{ $job->district->name }}, Cusco</span>
+            <span><x-icon name="pin" :size="15" />{{ $job->location_label }}</span>
         </div>
         @if(auth()->check() && auth()->user()->active && auth()->user()->role === 'candidate')
             <form action="{{ route('favorites.toggle', $job) }}" method="POST" class="job-save-form">
@@ -21,11 +21,14 @@
             </form>
         @endif
     </div>
-    @if($job->is_demo || $job->company->verified || $job->featured)<div class="job-card-badges">
+    <div class="job-card-badges">
+        <x-cv-requirement :job="$job" />
+        @if($job->work_mode !== 'onsite')<span class="badge">{{ \App\Models\JobOffer::WORK_MODES[$job->work_mode] }}</span>@endif
+        @if($job->distance_km !== null)<span class="badge"><x-icon name="pin" :size="14" />Aprox. {{ number_format($job->distance_km, 1) }} km</span>@endif
         @if($job->is_demo)<span class="badge badge-demo">Demo · oferta ficticia</span>@endif
         @if($job->company->verified)<span class="badge badge-success"><x-icon name="shield" :size="14" />{{ $job->is_demo ? 'Verificación de ejemplo' : 'Empresa verificada' }}</span>@endif
         @if($job->featured)<span class="badge badge-featured"><x-icon name="spark" :size="14" />Destacada</span>@endif
-    </div>@endif
+    </div>
     <h3><a href="{{ route('jobs.show', $job) }}">{{ $job->title }}</a></h3>
     <div class="job-tags"><span>{{ $schedules[$job->schedule] ?? $job->schedule }}</span><span>{{ $job->category->name }}</span></div>
     <div class="job-contract"><x-icon name="file" :size="16" /><span>{{ \App\Models\JobOffer::CONTRACT_TYPES[$job->contract_type] ?? $job->contract_type }}</span><span>·</span><span>{{ $job->vacancies }} {{ $job->vacancies === 1 ? 'vacante' : 'vacantes' }}</span></div>

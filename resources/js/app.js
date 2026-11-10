@@ -1,3 +1,5 @@
+import './locations';
+
 document.documentElement.classList.add('js-enhanced');
 
 const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
