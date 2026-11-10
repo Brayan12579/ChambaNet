@@ -61,6 +61,7 @@ Route::middleware('auth')->group(function (): void {
         Route::get('/empresa', 'company')->name('company.edit');
         Route::put('/empresa', 'updateCompany')->name('company.update');
         Route::get('/ofertas', 'index')->name('jobs.index');
+        Route::get('/postulaciones', 'applicants')->name('applications.index');
         Route::get('/ofertas/crear', 'create')->name('jobs.create');
         Route::post('/ofertas', 'store')->name('jobs.store');
         Route::get('/ofertas/{job}/editar', 'edit')->name('jobs.edit');

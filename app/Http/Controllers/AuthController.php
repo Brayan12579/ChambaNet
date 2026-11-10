@@ -37,7 +37,9 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard'));
+        $request->session()->forget('url.intended');
+
+        return $this->dashboard($request);
     }
 
     public function store(RegisterRequest $request): RedirectResponse
@@ -70,7 +72,7 @@ class AuthController extends Controller
         Auth::login($user);
         $request->session()->regenerate();
 
-        return redirect()->route('dashboard')->with('success', 'Tu cuenta está lista. ¡Bienvenido a ChambaNet!');
+        return $this->dashboard($request)->with('success', 'Tu cuenta está lista. ¡Bienvenido a ChambaNet!');
     }
 
     public function logout(Request $request): RedirectResponse
@@ -87,7 +89,8 @@ class AuthController extends Controller
         $route = match ($request->user()->role) {
             'admin' => 'admin.dashboard',
             'employer' => 'employer.dashboard',
-            default => 'candidate.dashboard',
+            'candidate' => 'candidate.dashboard',
+            default => abort(403),
         };
 
         return redirect()->route($route);

@@ -8,7 +8,7 @@
     <title>@yield('title', 'Tu próximo empleo en Cusco') · ChambaNet</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
+<body @class(['workspace-page' => request()->routeIs('candidate.*', 'employer.*', 'admin.*'), 'workspace-admin' => request()->routeIs('admin.*'), 'workspace-employer' => request()->routeIs('employer.*'), 'workspace-candidate' => request()->routeIs('candidate.*')])>
 <a class="skip-link" href="#main">Saltar al contenido</a>
 <header class="site-header">
     <div class="container navbar">
@@ -29,7 +29,7 @@
                     <a class="notification-bell" href="{{ route('notifications.index') }}" aria-label="Notificaciones. {{ $unreadNotificationCount }} sin leer"><x-icon name="bell" :size="22" />@if($unreadNotificationCount > 0)<span class="notification-count" aria-hidden="true">{{ $unreadNotificationCount > 99 ? '99+' : $unreadNotificationCount }}</span>@endif<span class="sr-only">Notificaciones</span></a>
                     <a class="nav-login nav-account" href="{{ route('dashboard') }}">
                         <span class="account-avatar" aria-hidden="true">{{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}</span>
-                        <span>Mi panel</span><x-icon name="arrow" :size="16" />
+                        <span>{{ match(auth()->user()->role) { 'admin' => 'Administración', 'employer' => 'Mi empresa', default => 'Mi espacio' } }}</span><x-icon name="arrow" :size="16" />
                     </a>
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
@@ -67,9 +67,9 @@
             <p>Oportunidades cercanas.<br>Un futuro con más posibilidades.</p>
             <span class="footer-location"><x-icon name="pin" :size="17" /> Cusco, Perú</span>
         </div>
-        <div><h3>Para candidatos</h3><a href="{{ route('jobs.index') }}">Explorar empleos</a><a href="{{ route('companies.index') }}">Conocer empresas</a><a href="{{ route('register') }}">Crear mi perfil</a><a href="{{ route('resources.index') }}">Prepararme para postular</a></div>
-        <div><h3>Para empresas</h3><a href="{{ auth()->check() ? route('dashboard') : route('register', ['role' => 'employer']) }}">Publicar una oferta</a><a href="{{ route('login') }}">Acceder a mi cuenta</a><a href="{{ route('password.request') }}">Recuperar mi acceso</a></div>
-        <div class="footer-note"><span class="eyebrow">EL TALENTO ESTÁ CERCA</span><p>Conectamos personas y negocios locales con información clara y procesos de selección organizados.</p><span class="badge badge-demo">Las ofertas “Demo” son ficticias</span></div>
+        <div><h3>Para candidatos</h3><a href="{{ route('jobs.index') }}">Explorar empleos</a><a href="{{ route('companies.index') }}">Conocer empresas</a>@if(!auth()->check() || auth()->user()->role === 'candidate')<a href="{{ auth()->check() ? route('candidate.profile.edit') : route('register') }}">{{ auth()->check() ? 'Mi perfil y CV' : 'Crear mi perfil' }}</a>@endif<a href="{{ route('resources.index') }}">Prepararme para postular</a></div>
+        <div><h3>Para empresas</h3>@if(!auth()->check() || auth()->user()->role === 'employer')<a href="{{ auth()->check() ? route('employer.jobs.create') : route('register', ['role' => 'employer']) }}">Publicar una oferta</a>@endif<a href="{{ auth()->check() ? route('dashboard') : route('login') }}">{{ auth()->check() ? 'Volver a mi panel' : 'Acceder a mi cuenta' }}</a><a href="{{ route('password.request') }}">Recuperar mi acceso</a></div>
+        <div class="footer-note"><span class="eyebrow">EL TALENTO ESTÁ CERCA</span><p>Conectamos personas y negocios locales con información clara y procesos de selección organizados.</p></div>
     </div>
     <div class="container footer-bottom"><span>© {{ date('Y') }} ChambaNet. Hecho para nuestra comunidad.</span><span>Tu talento. Tu ciudad. Tu próximo paso. <span aria-hidden="true">✦</span></span></div>
 </footer>

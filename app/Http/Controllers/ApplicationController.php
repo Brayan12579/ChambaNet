@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 use RuntimeException;
@@ -21,8 +22,19 @@ class ApplicationController extends Controller
 {
     public function index(Request $request): View
     {
+        $filters = $request->validate([
+            'status' => ['nullable', Rule::in(array_keys(Application::STATUSES))],
+            'q' => ['nullable', 'string', 'max:120'],
+        ]);
+
         return view('candidate.applications', [
-            'applications' => $request->user()->applications()->with(['jobOffer.company', 'jobOffer.district'])->latest()->paginate(12),
+            'filters' => $filters,
+            'applications' => $request->user()->applications()->with(['jobOffer.company', 'jobOffer.district'])
+                ->when(filled($filters['status'] ?? null), fn ($query) => $query->where('status', $filters['status']))
+                ->when(filled($filters['q'] ?? null), fn ($query) => $query->whereHas('jobOffer', fn ($jobs) => $jobs
+                    ->where(fn ($jobs) => $jobs->where('title', 'like', '%'.$filters['q'].'%')
+                        ->orWhereHas('company', fn ($companies) => $companies->where('name', 'like', '%'.$filters['q'].'%')))))
+                ->latest()->orderByDesc('id')->paginate(12)->withQueryString(),
         ]);
     }
 

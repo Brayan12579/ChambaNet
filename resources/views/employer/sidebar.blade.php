@@ -1,11 +1,10 @@
 <aside class="sidebar panel" aria-label="Panel del empleador">
     <p class="eyebrow">ESPACIO EMPRESA</p>
-    <h3>{{ auth()->user()->company->name }}</h3>
-    <nav class="stack">
-        <a class="{{ request()->routeIs('employer.dashboard') ? 'active' : '' }}" href="{{ route('employer.dashboard') }}">Resumen</a>
-        <a class="{{ request()->routeIs('employer.company.*') ? 'active' : '' }}" href="{{ route('employer.company.edit') }}">Perfil de empresa</a>
-        <a class="{{ request()->routeIs('employer.jobs.*') ? 'active' : '' }}" href="{{ route('employer.jobs.index') }}">Mis ofertas</a>
-        <a href="{{ route('employer.jobs.create') }}">Publicar una oferta ↗</a>
+    <h3>{{ auth()->user()->company->name }}<span class="sidebar-role">Empleador</span></h3>
+    <nav class="stack" aria-label="Secciones de la empresa">
+        @foreach(['employer.dashboard' => ['Resumen', 'building', request()->routeIs('employer.dashboard')], 'employer.jobs.index' => ['Mis ofertas', 'briefcase', request()->routeIs('employer.jobs.index', 'employer.jobs.edit')], 'employer.applications.index' => ['Postulaciones', 'users', request()->routeIs('employer.applications.*', 'employer.jobs.applicants')], 'employer.company.edit' => ['Perfil de empresa', 'file', request()->routeIs('employer.company.*')], 'employer.jobs.create' => ['Publicar oferta', 'arrow', request()->routeIs('employer.jobs.create')]] as $route => [$label, $icon, $active])
+            <a href="{{ route($route) }}" @class(['active' => $active]) @if($active) aria-current="page" @endif><x-icon :name="$icon" :size="19" />{{ $label }}</a>
+        @endforeach
     </nav>
     <p class="muted">Conecta con el talento de Cusco. Publica información clara y revisa cada candidatura.</p>
 </aside>

@@ -1,11 +1,10 @@
 <aside class="sidebar panel" aria-label="Panel del candidato">
     <span class="eyebrow">MI ESPACIO</span>
-    <h3>{{ auth()->user()->name }}</h3>
-    <nav class="stack">
-        <a class="{{ request()->routeIs('candidate.dashboard') ? 'active' : '' }}" href="{{ route('candidate.dashboard') }}">Resumen</a>
-        <a class="{{ request()->routeIs('candidate.profile.*') ? 'active' : '' }}" href="{{ route('candidate.profile.edit') }}">Mi perfil y CV</a>
-        <a class="{{ request()->routeIs('candidate.applications.*') ? 'active' : '' }}" href="{{ route('candidate.applications.index') }}">Mis postulaciones</a>
-        <a class="{{ request()->routeIs('candidate.favorites.*') ? 'active' : '' }}" href="{{ route('candidate.favorites.index') }}">Empleos guardados</a>
-        <a class="button button-secondary" href="{{ route('jobs.index') }}">Buscar empleo</a>
+    <h3>{{ auth()->user()->name }}<span class="sidebar-role">Candidato</span></h3>
+    <nav class="stack" aria-label="Secciones del candidato">
+        @foreach(['candidate.dashboard' => ['Resumen', 'briefcase', 'candidate.dashboard'], 'candidate.applications.index' => ['Mis postulaciones', 'file', 'candidate.applications.*'], 'candidate.favorites.index' => ['Empleos guardados', 'bookmark', 'candidate.favorites.*'], 'candidate.profile.edit' => ['Mi perfil y CV', 'users', 'candidate.profile.*']] as $route => [$label, $icon, $pattern])
+            <a href="{{ route($route) }}" @class(['active' => request()->routeIs($pattern)]) @if(request()->routeIs($pattern)) aria-current="page" @endif><x-icon :name="$icon" :size="19" />{{ $label }}</a>
+        @endforeach
+        <a class="button button-secondary" href="{{ route('jobs.index') }}"><x-icon name="search" :size="19" />Buscar empleo</a>
     </nav>
 </aside>

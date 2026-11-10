@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CandidateProfileRequest;
 use App\Models\District;
+use App\Models\JobOffer;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -25,6 +26,11 @@ class CandidateController extends Controller
             'applications' => $user->applications()->with(['jobOffer.company', 'jobOffer.district'])->latest()->limit(5)->get(),
             'savedCount' => $user->favorites()->count(),
             'applicationCounts' => $user->applications()->selectRaw('status, COUNT(*) as total')->groupBy('status')->pluck('total', 'status'),
+            'availableCount' => JobOffer::published()->count(),
+            'suggestedJobs' => JobOffer::published()->withSavedState($user)->with(['company', 'category', 'district'])
+                ->whereDoesntHave('applications', fn ($query) => $query->where('user_id', $user->id))
+                ->when($user->candidateProfile?->district_id, fn ($query, $district) => $query->orderByRaw('CASE WHEN district_id = ? THEN 0 ELSE 1 END', [$district]))
+                ->latest()->orderByDesc('id')->take(3)->get(),
             ...$this->profileSummary($user),
         ]);
     }

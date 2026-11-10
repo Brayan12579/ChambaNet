@@ -32,7 +32,7 @@ class EmployerController extends Controller
     public function dashboard(Request $request): View
     {
         $company = $this->companyFor($request);
-        $jobs = $company->jobOffers()->withCount('applications')->latest()->take(5)->get();
+        $jobs = $company->jobOffers()->withCount(['applications', 'applications as pending_count' => fn ($query) => $query->where('status', 'pending')])->latest()->take(5)->get();
         $received = Application::whereHas('jobOffer', fn ($query) => $query->where('company_id', $company->id));
         $stats = [
             'Ofertas activas' => $company->jobOffers()->published()->count(),
@@ -44,7 +44,9 @@ class EmployerController extends Controller
         ];
         $companyMissingFields = $this->missingCompanyFields($company);
 
-        return view('employer.dashboard', compact('company', 'jobs', 'stats', 'companyMissingFields'));
+        $recentApplications = (clone $received)->with(['user', 'jobOffer'])->latest()->take(4)->get();
+
+        return view('employer.dashboard', compact('company', 'jobs', 'stats', 'companyMissingFields', 'recentApplications'));
     }
 
     public function company(Request $request): View
@@ -190,15 +192,23 @@ class EmployerController extends Controller
         return redirect()->route('employer.jobs.index')->with('status', 'Oferta eliminada.');
     }
 
-    public function applicants(Request $request, JobOffer $job): View
+    public function applicants(Request $request, ?JobOffer $job = null): View
     {
-        Gate::authorize('update', $job);
+        if ($job) {
+            Gate::authorize('update', $job);
+        }
+        $company = $this->companyFor($request);
         $filters = $request->validate([
             'q' => ['nullable', 'string', 'max:120'],
             'status' => ['nullable', Rule::in(array_keys(Application::STATUSES))],
             'sort' => ['nullable', Rule::in(['recent', 'oldest'])],
+            'job' => ['nullable', Rule::exists('job_offers', 'id')->where('company_id', $company->id)],
         ]);
-        $applications = $job->applications()->with(['user.candidateProfile'])
+        $query = Application::whereHas('jobOffer', fn ($query) => $query->where('company_id', $company->id))
+            ->when($job, fn ($query) => $query->where('job_offer_id', $job->id));
+        $applicationCounts = (clone $query)->selectRaw('status, COUNT(*) as total')->groupBy('status')->pluck('total', 'status');
+        $applications = $query->with(['user.candidateProfile', 'jobOffer'])
+            ->when(! $job && filled($filters['job'] ?? null), fn ($query) => $query->where('job_offer_id', $filters['job']))
             ->when(filled($filters['status'] ?? null), fn ($query) => $query->where('status', $filters['status']))
             ->when(filled($filters['q'] ?? null), function ($query) use ($filters): void {
                 $query->whereHas('user', fn ($users) => $users->where('name', 'like', '%'.$filters['q'].'%')->orWhere('email', 'like', '%'.$filters['q'].'%'));
@@ -206,9 +216,9 @@ class EmployerController extends Controller
             ->orderBy('created_at', ($filters['sort'] ?? 'recent') === 'oldest' ? 'asc' : 'desc')
             ->orderBy('id', ($filters['sort'] ?? 'recent') === 'oldest' ? 'asc' : 'desc')
             ->paginate(15)->withQueryString();
-        $applicationCounts = $job->applications()->selectRaw('status, COUNT(*) as total')->groupBy('status')->pluck('total', 'status');
+        $offers = $company->jobOffers()->orderBy('title')->get(['id', 'title']);
 
-        return view('employer.applicants', compact('job', 'applications', 'filters', 'applicationCounts'));
+        return view('employer.applicants', compact('job', 'applications', 'filters', 'applicationCounts', 'offers'));
     }
 
     public function updateApplication(Request $request, Application $application): RedirectResponse

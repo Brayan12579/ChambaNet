@@ -10,7 +10,7 @@
     @include('admin.sidebar')
     <div class="dashboard-main stack">
         <header class="page-heading"><div><span class="eyebrow">ADMINISTRACIÓN</span><h1>{{ $title }}</h1><p>{{ number_format($records->total()) }} {{ $records->total() === 1 ? 'registro encontrado' : 'registros encontrados' }}.</p></div>@if($section !== 'reports')<a class="button" href="{{ route('admin.content.create', ['section' => $section]) }}">Crear registro <x-icon name="arrow" :size="18" /></a>@endif</header>
-        <form class="panel stack admin-filters" method="GET" action="{{ route('admin.content.index', ['section' => $section]) }}" role="search">
+        <form class="panel stack" method="GET" action="{{ route('admin.content.index', ['section' => $section]) }}" role="search">
             <div class="form-grid">
                 <div class="field"><label for="admin-search">Buscar en {{ mb_strtolower($title) }}</label><input id="admin-search" type="search" name="q" value="{{ $search }}" maxlength="160" placeholder="Nombre, título o motivo"></div>
                 @foreach($filterOptions as $key => $configuration)<div class="field"><label for="admin-filter-{{ $key }}">{{ $configuration['label'] }}</label><select name="{{ $key }}" id="admin-filter-{{ $key }}"><option value="">Todos</option>@foreach($configuration['options'] as $value => $label)<option value="{{ $value }}" @selected(array_key_exists($key, $filters) && (string) $filters[$key] === (string) $value)>{{ $label }}</option>@endforeach</select></div>@endforeach

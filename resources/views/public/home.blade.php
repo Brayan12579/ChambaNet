@@ -7,8 +7,16 @@
             <span class="hero-kicker"><span class="tiny-dot"></span> TU TALENTO TIENE UN LUGAR</span>
             <h1>Encuentra tu próximo<br><span>empleo en Cusco.</span></h1>
             <p>Oportunidades de nuestra ciudad, con la información que necesitas para dar el siguiente paso. Busca cerca de ti y postula con confianza.</p>
-            <div class="hero-availability"><x-icon name="briefcase" :size="19" /><strong>{{ $jobCount }}</strong> {{ $jobCount === 1 ? 'oferta disponible' : 'ofertas disponibles' }} <span>·</span> negocios locales</div>
+            <div class="hero-availability"><x-icon name="briefcase" :size="19" /><span><strong>{{ $jobCount }}</strong> {{ $jobCount === 1 ? 'oferta disponible' : 'ofertas disponibles' }} en negocios locales</span></div>
             <div class="hero-trust"><x-icon name="shield" :size="21" /><span>Postular es gratis.<br><strong>Tu CV se comparte cuando tú postulas.</strong></span></div>
+            <div class="hero-entry-actions">
+                @guest
+                    <a class="button" href="{{ route('register', ['role' => 'candidate']) }}">Busco empleo <x-icon name="arrow" :size="18" /></a>
+                    <a class="button button-secondary" href="{{ route('register', ['role' => 'employer']) }}">Quiero contratar</a>
+                @else
+                    <a class="button" href="{{ route('dashboard') }}">{{ match(auth()->user()->role) { 'admin' => 'Abrir administración', 'employer' => 'Gestionar mi empresa', default => 'Continuar mi búsqueda' } }} <x-icon name="arrow" :size="18" /></a>
+                @endguest
+            </div>
         </div>
         <x-cusco-illustration />
     </div>
@@ -37,10 +45,10 @@
 <section class="section recent-section">
     <div class="container">
         <div class="section-heading"><div><span class="eyebrow">EL MOMENTO DE COMENZAR ES AHORA</span><h2>Oportunidades recién llegadas<span class="heading-dot">.</span></h2><p>Conoce los últimos puestos publicados en nuestra ciudad.</p></div><a class="button button-secondary" href="{{ route('jobs.index') }}">Ver todos los empleos <x-icon name="arrow" :size="19" /></a></div>
-        <div class="demo-notice"><x-icon name="book" :size="19" /><span>Las ofertas etiquetadas <strong>Demo</strong> son ejemplos ficticios del proyecto. No representan vacantes reales.</span></div>
+        @if($jobs->contains('is_demo', true))<div class="demo-notice"><x-icon name="book" :size="19" /><span>Las ofertas etiquetadas <strong>Demo</strong> son ejemplos ficticios del proyecto. No representan vacantes reales.</span></div>@endif
         <div class="grid-3 jobs-grid">
             @forelse($jobs as $job)<x-job-card :job="$job" />
-            @empty<div class="empty-state panel"><x-icon name="briefcase" :size="38" /><h3>Las oportunidades están por llegar</h3><p>¿Tienes un negocio? Publica una vacante y conecta con el talento local.</p><a class="button" href="{{ auth()->check() ? route('dashboard') : route('register', ['role' => 'employer']) }}">Publicar mi primera oferta</a></div>@endforelse
+            @empty<div class="empty-state panel"><x-icon name="briefcase" :size="38" /><h3>Las oportunidades están por llegar</h3><p>{{ auth()->user()?->role === 'candidate' ? 'Completa tu perfil y prepara tu CV para las próximas publicaciones.' : '¿Tienes un negocio? Publica una vacante y conecta con el talento local.' }}</p><a class="button" href="{{ auth()->check() ? route('dashboard') : route('register', ['role' => 'employer']) }}">{{ auth()->user()?->role === 'candidate' ? 'Preparar mi perfil' : (auth()->check() ? 'Ir a mi panel' : 'Publicar mi primera oferta') }}</a></div>@endforelse
         </div>
     </div>
 </section>
@@ -75,8 +83,10 @@
         <div class="grid-3">@forelse($resources as $resource)<x-resource-card :resource="$resource" :index="$loop->index" />@empty<div class="empty-state panel">Pronto encontrarás guías de orientación laboral aquí.</div>@endforelse</div>
     </div>
 </section>
+@if(!auth()->check() || auth()->user()->role === 'employer')
 <section class="container employer-banner">
-    <div><span class="eyebrow">EL TALENTO QUE BUSCAS ESTÁ CERCA</span><h2>Tu próximo gran equipo<br>empieza en tu ciudad.</h2><p>Publica tus vacantes con información clara y gestiona tus procesos de selección en un solo lugar.</p><a class="button button-lime" href="{{ auth()->check() ? route('dashboard') : route('register', ['role' => 'employer']) }}">Quiero encontrar talento <x-icon name="arrow" :size="19" /></a></div>
+    <div><span class="eyebrow">EL TALENTO QUE BUSCAS ESTÁ CERCA</span><h2>Tu próximo gran equipo<br>empieza en tu ciudad.</h2><p>Publica tus vacantes con información clara y gestiona tus procesos de selección en un solo lugar.</p><a class="button button-lime" href="{{ auth()->check() ? route('employer.jobs.create') : route('register', ['role' => 'employer']) }}">Quiero encontrar talento <x-icon name="arrow" :size="19" /></a></div>
     <div class="banner-art" aria-hidden="true"><span class="banner-circle"></span><x-icon name="users" :size="120" /><span class="banner-star">✦</span><span class="banner-caption">Cusco tiene talento.</span></div>
 </section>
+@endif
 @endsection

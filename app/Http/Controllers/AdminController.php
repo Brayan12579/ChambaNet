@@ -43,7 +43,7 @@ class AdminController extends Controller
             'Reportes pendientes' => Report::where('status', 'pending')->count(),
             'Empresas por verificar' => (clone $pendingQuery)->count(),
         ];
-        $reports = Report::with(['user', 'jobOffer'])->orderByRaw("CASE WHEN status = 'pending' THEN 0 ELSE 1 END")->latest()->take(5)->get();
+        $reports = Report::with(['user', 'jobOffer'])->where('status', 'pending')->latest()->take(5)->get();
 
         return view('admin.dashboard', [
             'stats' => $stats, 'reports' => $reports, 'sections' => self::SECTIONS,
@@ -249,9 +249,22 @@ class AdminController extends Controller
         return back()->with('status', 'Registro eliminado.');
     }
 
-    public function applications(): View
+    public function applications(Request $request): View
     {
-        return view('admin.applications', ['applications' => Application::with(['user', 'jobOffer.company'])->latest()->paginate(20), 'sections' => self::SECTIONS]);
+        $filters = $request->validate([
+            'q' => ['nullable', 'string', 'max:160'],
+            'status' => ['nullable', Rule::in(array_keys(Application::STATUSES))],
+        ]);
+        $applications = Application::with(['user', 'jobOffer.company'])
+            ->when(filled($filters['status'] ?? null), fn ($query) => $query->where('status', $filters['status']))
+            ->when(filled($filters['q'] ?? null), fn ($query) => $query->where(function ($query) use ($filters): void {
+                $term = '%'.$filters['q'].'%';
+                $query->whereHas('user', fn ($users) => $users->where('name', 'like', $term)->orWhere('email', 'like', $term))
+                    ->orWhereHas('jobOffer', fn ($jobs) => $jobs->where('title', 'like', $term)
+                        ->orWhereHas('company', fn ($companies) => $companies->where('name', 'like', $term)));
+            }))->latest()->orderByDesc('id')->paginate(20)->withQueryString();
+
+        return view('admin.applications', ['applications' => $applications, 'sections' => self::SECTIONS, 'filters' => $filters]);
     }
 
     private function definition(string $section): array

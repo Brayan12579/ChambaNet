@@ -6,6 +6,7 @@
     <div class="dashboard-layout">
         @include('candidate._nav')
         <div class="dashboard-main stack">
+            <form class="panel stack" method="GET" action="{{ route('candidate.applications.index') }}" role="search"><div class="form-grid"><div class="field"><label for="application-search">Puesto o empresa</label><input type="search" id="application-search" name="q" maxlength="120" value="{{ $filters['q'] ?? '' }}" placeholder="Encuentra una postulación"></div><div class="field"><label for="application-status">Estado de tu postulación</label><select id="application-status" name="status"><option value="">Todos los estados</option>@foreach(\App\Models\Application::STATUSES as $value => $label)<option value="{{ $value }}" @selected(($filters['status'] ?? '') === $value)>{{ $label }}</option>@endforeach</select></div></div><div class="actions"><button class="button-secondary" type="submit"><x-icon name="sliders" :size="18" />Filtrar postulaciones</button>@if(collect($filters)->filter(fn ($value) => filled($value))->isNotEmpty())<a class="text-link" href="{{ route('candidate.applications.index') }}">Limpiar filtros</a>@endif<span class="muted">{{ $applications->total() }} resultados</span></div></form>
             @forelse($applications as $application)
                 <article class="panel stack">
                     <div class="page-heading"><div><h2><a href="{{ route('jobs.show', $application->jobOffer) }}">{{ $application->jobOffer->title }}</a></h2><p class="muted">{{ $application->jobOffer->company->name }} · {{ $application->jobOffer->district->name }}</p></div><x-application-status :status="$application->status" /></div>
@@ -21,7 +22,7 @@
                     @if($application->status === 'withdrawn')<small class="muted">Esta postulación fue retirada. Su historial se conserva.</small>@endif
                 </article>
             @empty
-                <div class="panel empty-state"><h2>Aún no tienes postulaciones</h2><p>Encuentra una oferta, revisa sus condiciones y envía tu CV para empezar.</p><a class="button" href="{{ route('jobs.index') }}">Encontrar empleo</a></div>
+                <div class="panel empty-state"><x-icon name="file" :size="34" /><h2>{{ collect($filters)->filter(fn ($value) => filled($value))->isNotEmpty() ? 'No hay coincidencias con estos filtros' : 'Aún no tienes postulaciones' }}</h2><p>Consulta otro estado o encuentra una oferta, revisa sus condiciones y envía tu CV para empezar.</p><a class="button" href="{{ route('jobs.index') }}">Encontrar empleo</a></div>
             @endforelse
             {{ $applications->links() }}
         </div>
