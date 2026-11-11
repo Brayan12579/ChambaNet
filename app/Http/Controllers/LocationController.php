@@ -23,7 +23,7 @@ class LocationController extends Controller
             'longitude' => ['required', 'numeric', 'between:-180,180'],
         ]);
         $token = Str::random(40);
-        // Approximate coordinates only, transient and bound to the browser session.
+        // Solo se usan coordenadas aproximadas, temporales y vinculadas a la sesión del navegador.
         $locations->cache()->put('geocoding:origin:'.$token, [
             'latitude' => round((float) $data['latitude'], 2),
             'longitude' => round((float) $data['longitude'], 2),

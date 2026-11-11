@@ -40,7 +40,7 @@ class LocationIntegrationTest extends TestCase
 
     private function place(): array
     {
-        // Provider fixture for isolated tests; runtime always uses the HTTP service.
+        // Datos simulados del proveedor para pruebas aisladas; la aplicación utiliza el servicio HTTP.
         return ['name' => 'Cusco', 'display_name' => 'Cusco, Provincia de Cusco, Cusco, Perú',
             'lat' => '-13.516', 'lon' => '-71.978', 'address' => ['country_code' => 'pe'],
             'boundingbox' => ['-13.7', '-13.2', '-72.2', '-71.5']];

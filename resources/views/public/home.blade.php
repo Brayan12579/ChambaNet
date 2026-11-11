@@ -9,10 +9,10 @@
             <p>Conectamos personas con oportunidades de trabajo en Cusco. Encuentra tu lugar o a quienes harán crecer tu equipo.</p>
             <div class="hero-entry-actions">
                 @guest
-                    <a class="button button-lime" href="{{ route('jobs.index') }}">Quiero encontrar empleo <x-icon name="arrow" :size="18" /></a>
+                    <a class="button button-gradient" href="{{ route('jobs.index') }}">Quiero encontrar empleo <x-icon name="arrow" :size="18" /></a>
                     <a class="button button-hero-secondary" href="{{ route('register', ['role' => 'employer']) }}">Quiero contratar</a>
                 @else
-                    <a class="button button-lime" href="{{ route('dashboard') }}">{{ match(auth()->user()->role) { 'admin' => 'Abrir administración', 'employer' => 'Gestionar mi empresa', default => 'Continuar mi búsqueda' } }} <x-icon name="arrow" :size="18" /></a>
+                    <a class="button button-gradient" href="{{ route('dashboard') }}">{{ match(auth()->user()->role) { 'admin' => 'Abrir administración', 'employer' => 'Gestionar mi empresa', default => 'Continuar mi búsqueda' } }} <x-icon name="arrow" :size="18" /></a>
                 @endguest
             </div>
             <div class="hero-trust"><x-icon name="shield" :size="19" /><span>Postula gratis. Comparte tu CV solo con quien eliges.</span></div>
@@ -87,7 +87,7 @@
 </section>
 @if(!auth()->check() || auth()->user()->role === 'employer')
 <section class="container employer-banner">
-    <div><span class="eyebrow">EL TALENTO QUE BUSCAS ESTÁ CERCA</span><h2>Tu próximo gran equipo<br>empieza en tu ciudad.</h2><p>Publica tus vacantes con información clara y gestiona tus procesos de selección en un solo lugar.</p><a class="button button-lime" href="{{ auth()->check() ? route('employer.jobs.create') : route('register', ['role' => 'employer']) }}">Quiero encontrar talento <x-icon name="arrow" :size="19" /></a></div>
+    <div><span class="eyebrow">EL TALENTO QUE BUSCAS ESTÁ CERCA</span><h2>Tu próximo gran equipo<br>empieza en tu ciudad.</h2><p>Publica tus vacantes con información clara y gestiona tus procesos de selección en un solo lugar.</p><a class="button button-gradient" href="{{ auth()->check() ? route('employer.jobs.create') : route('register', ['role' => 'employer']) }}">Quiero encontrar talento <x-icon name="arrow" :size="19" /></a></div>
     <div class="banner-art" aria-hidden="true"><span class="banner-circle"></span><x-icon name="users" :size="120" /><span class="banner-star">✦</span><span class="banner-caption">Cusco tiene talento.</span></div>
 </section>
 @endif

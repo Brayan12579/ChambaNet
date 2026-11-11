@@ -19,7 +19,7 @@ class CvWorkflowTest extends TestCase
     public function createApplication()
     {
         $app = parent::createApplication();
-        // These tests never connect to the project's MySQL database.
+        // Estas pruebas no se conectan a la base de datos MySQL del proyecto.
         $app['config']->set('database.default', 'sqlite');
         $app['config']->set('database.connections.sqlite.database', ':memory:');
         $app['config']->set('database.connections.sqlite.url', null);

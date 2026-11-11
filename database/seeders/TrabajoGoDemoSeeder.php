@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
 class TrabajoGoDemoSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Carga los datos iniciales de la base de datos.
      */
     public function run(): void
     {

@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="theme-color" content="#123d32">
+    <meta name="theme-color" content="#4F46E5">
+    <link rel="icon" type="image/x-icon" sizes="16x16 32x32 48x48 64x64" href="{{ asset('favicon.ico') }}?v=chambanet">
     <meta name="description" content="Encuentra empleo en Cusco con ChambaNet. Explora oportunidades de negocios locales, guarda ofertas y sigue tus postulaciones en un solo lugar.">
     <title>@yield('title', 'Tu próximo empleo en Cusco') · ChambaNet</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -14,8 +15,10 @@
 <header class="site-header">
     <div class="container navbar">
         <a class="brand" href="{{ route('home') }}" aria-label="ChambaNet, inicio">
-            <span class="brand-mark"><x-icon name="briefcase" :size="23" /></span>
-            <span>Chamba<span class="brand-accent">Net<span class="brand-dot">.</span></span></span>
+            <picture>
+                <source media="(max-width: 899px)" srcset="{{ asset('images/logo-chambanet-symbol.webp') }}" width="192" height="192">
+                <img class="brand-logo" src="{{ asset('images/logo-chambanet.webp') }}" width="384" height="369" alt="ChambaNet" decoding="async">
+            </picture>
         </a>
         <button class="menu-toggle" type="button" data-menu-toggle aria-controls="main-nav" aria-expanded="false" aria-label="Abrir menú de navegación">
             <x-icon name="menu" :size="25" />
@@ -62,10 +65,10 @@
 @endif
 <main id="main" tabindex="-1">@yield('content')</main>
 <footer class="site-footer">
-    <div class="container footer-intro"><div><span class="eyebrow">TU TALENTO TIENE UN LUGAR</span><h2>El siguiente paso empieza cerca.</h2></div><a class="button button-lime" href="{{ route('jobs.index') }}">Explorar oportunidades <x-icon name="arrow" :size="18" /></a></div>
+    <div class="container footer-intro"><div><span class="eyebrow">TU TALENTO TIENE UN LUGAR</span><h2>El siguiente paso empieza cerca.</h2></div><a class="button button-gradient" href="{{ route('jobs.index') }}">Explorar oportunidades <x-icon name="arrow" :size="18" /></a></div>
     <div class="container footer-grid">
         <div>
-            <a class="brand" href="{{ route('home') }}"><span class="brand-mark"><x-icon name="briefcase" :size="23" /></span><span>Chamba<span class="brand-accent">Net<span class="brand-dot">.</span></span></span></a>
+            <a class="brand" href="{{ route('home') }}" aria-label="ChambaNet, inicio"><img class="brand-logo" src="{{ asset('images/logo-chambanet.webp') }}" width="384" height="369" alt="ChambaNet" loading="lazy" decoding="async"></a>
             <p>Oportunidades cercanas.<br>Un futuro con más posibilidades.</p>
             <span class="footer-location"><x-icon name="pin" :size="17" /> Cusco, Perú</span>
         </div>

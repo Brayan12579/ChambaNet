@@ -19,7 +19,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        // Keep nullable paths: historical applications without a CV must remain valid.
+        // Permite rutas nulas para conservar la validez de las postulaciones antiguas sin currículum.
         Schema::table('job_offers', function (Blueprint $table) {
             $table->dropColumn('cv_required');
         });

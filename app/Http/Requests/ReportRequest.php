@@ -8,7 +8,7 @@ use Illuminate\Foundation\Http\FormRequest;
 class ReportRequest extends FormRequest
 {
     /**
-     * Determine if the user is authorized to make this request.
+     * Determina si el usuario tiene permiso para realizar esta solicitud.
      */
     public function authorize(): bool
     {
@@ -16,7 +16,7 @@ class ReportRequest extends FormRequest
     }
 
     /**
-     * Get the validation rules that apply to the request.
+     * Define las reglas de validación de la solicitud.
      *
      * @return array<string, ValidationRule|array<mixed>|string>
      */

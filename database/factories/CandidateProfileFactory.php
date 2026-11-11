@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class CandidateProfileFactory extends Factory
 {
     /**
-     * Define the model's default state.
+     * Define los datos predeterminados del modelo para las pruebas.
      *
      * @return array<string, mixed>
      */

@@ -18,18 +18,18 @@
             <button class="button button-full" type="submit">Entrar a mi cuenta <x-icon name="arrow" :size="19" /></button>
         </form>
         @if(app()->environment(['local', 'demo']))
-            <section aria-labelledby="demo-accounts-title" style="margin-top: 24px; padding-top: 18px; border-top: 1px solid #e5e7eb; color: #6b7280; font-size: .8125rem; line-height: 1.6; overflow-wrap: anywhere;">
+            <section aria-labelledby="demo-accounts-title" style="margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: .8125rem; line-height: 1.6; overflow-wrap: anywhere;">
                 <h3 id="demo-accounts-title" style="margin: 0 0 12px; color: inherit; font-size: .875rem; font-weight: 600;">Cuentas de prueba</h3>
                 <dl style="margin: 0;">
                     <div style="padding-bottom: 12px;">
                         <dt style="font-weight: 600;">Empleado</dt>
                         <dd style="margin: 0;">Usuario: 61018303@cotinental.edu.pe<br>Contraseña: 12345678</dd>
                     </div>
-                    <div style="padding-block: 12px; border-top: 1px solid #e5e7eb;">
+                    <div style="padding-block: 12px; border-top: 1px solid var(--line);">
                         <dt style="font-weight: 600;">Empleador</dt>
                         <dd style="margin: 0;">Usuario: empleador@gmail.com<br>Contraseña: Vallecito_1</dd>
                     </div>
-                    <div style="padding-top: 12px; border-top: 1px solid #e5e7eb;">
+                    <div style="padding-top: 12px; border-top: 1px solid var(--line);">
                         <dt style="font-weight: 600;">Administrador</dt>
                         <dd style="margin: 0;">Usuario: admin@trabajogo.com<br>Contraseña: Blxryan_12345</dd>
                     </div>

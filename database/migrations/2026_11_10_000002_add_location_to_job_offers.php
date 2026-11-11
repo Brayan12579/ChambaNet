@@ -20,7 +20,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        // Keep nullable district IDs so remote jobs and jobs outside the local catalog survive a rollback.
+        // Permite distritos nulos para conservar las ofertas remotas o fuera del catálogo local al revertir la migración.
         Schema::table('job_offers', function (Blueprint $table) {
             $table->dropIndex(['latitude', 'longitude']);
             $table->dropColumn(['location_name', 'latitude', 'longitude', 'work_mode']);

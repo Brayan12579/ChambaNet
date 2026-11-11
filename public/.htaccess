@@ -5,20 +5,20 @@
 
     RewriteEngine On
 
-    # Handle Authorization Header
+    # Conserva la cabecera de autorización para PHP.
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Handle X-XSRF-Token Header
+    # Conserva la cabecera del token de protección contra solicitudes falsificadas.
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
-    # Redirect Trailing Slashes If Not A Folder...
+    # Elimina la barra final de la dirección cuando no corresponde a una carpeta.
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Send Requests To Front Controller...
+    # Envía a index.php las solicitudes que no corresponden a archivos o carpetas.
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]

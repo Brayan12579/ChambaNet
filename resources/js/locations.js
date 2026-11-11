@@ -70,7 +70,7 @@ async function showPreview(picker, latitude, longitude) {
     let state = maps.get(element);
     if (!state) {
         const map = makeMap(L, element);
-        state = { map, marker: L.circleMarker([latitude, longitude], { radius: 9, color: '#123d32', fillColor: '#4e966c', fillOpacity: 1 }).addTo(map) };
+        state = { map, marker: L.circleMarker([latitude, longitude], { radius: 9, color: getComputedStyle(element).getPropertyValue('--primary-dark').trim(), fillColor: getComputedStyle(element).getPropertyValue('--primary').trim(), fillOpacity: 1 }).addTo(map) };
         maps.set(element, state);
     }
     state.marker.setLatLng([latitude, longitude]);
@@ -99,7 +99,7 @@ document.querySelectorAll('[data-location-picker]').forEach((picker) => {
         if (district) district.value = '';
         status.textContent = picker.dataset.context === 'offer' ? 'Ubicación manual: el texto se guardará sin asignar coordenadas.' : 'Pulsa «Buscar ubicación» para consultar coincidencias reales.';
     };
-    // Typing only clears the old selection; it never sends a geocoding request.
+    // Al escribir solo se borra la selección anterior; la búsqueda de ubicaciones se envía por separado.
     input.addEventListener('input', clearSelection);
     input.addEventListener('keydown', (event) => {
         if (event.key === 'Enter' && !event.isComposing) {
@@ -183,7 +183,7 @@ document.querySelectorAll('[data-nearby-search]').forEach((container) => {
         status.textContent = 'Esperando tu permiso de ubicación…';
         navigator.geolocation.getCurrentPosition(async ({ coords }) => {
             try {
-                // Never transmit or persist the precise browser position.
+                // No enviar ni guardar la posición exacta obtenida del navegador.
                 const data = await postJson(container.dataset.nearbyUrl, {
                     latitude: Number(coords.latitude.toFixed(2)), longitude: Number(coords.longitude.toFixed(2)),
                 });

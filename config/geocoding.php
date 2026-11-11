@@ -3,7 +3,7 @@
 return [
     'search_url' => env('NOMINATIM_URL', 'https://nominatim.openstreetmap.org/search'),
     'user_agent' => env('NOMINATIM_USER_AGENT', 'ChambaNet/1.0 (+'.env('APP_URL', 'http://localhost').'; job-location search)'),
-    // A shared database store keeps the provider limit global across PHP workers.
+    // La caché compartida en la base de datos mantiene un límite común del proveedor entre los procesos de PHP.
     'cache_store' => env('NOMINATIM_CACHE_STORE', 'database'),
     'cache_seconds' => 604800,
     'tile_url' => env('OSM_TILE_URL', 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'),

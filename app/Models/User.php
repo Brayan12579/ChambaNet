@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -54,7 +53,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the attributes that should be cast.
+     * Define las conversiones de tipo de los atributos del modelo.
      *
      * @return array<string, string>
      */

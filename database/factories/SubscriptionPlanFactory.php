@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class SubscriptionPlanFactory extends Factory
 {
     /**
-     * Define the model's default state.
+     * Define los datos predeterminados del modelo para las pruebas.
      *
      * @return array<string, mixed>
      */

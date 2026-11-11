@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 class EnsureRole
 {
     /**
-     * Handle an incoming request.
+     * Procesa la solicitud entrante.
      *
      * @param  Closure(Request): (Response)  $next
      */
